@@ -1,0 +1,11 @@
+{
+  "entity": {
+    "sensor": {
+      "last_reading_date": { "default": "mdi:calendar-check" },
+      "next_reading_date": { "default": "mdi:calendar-clock" },
+      "balance": { "default": "mdi:cash" },
+      "next_payment": { "default": "mdi:cash-clock" },
+      "next_payment_date": { "default": "mdi:calendar-clock" }
+    }
+  }
+}

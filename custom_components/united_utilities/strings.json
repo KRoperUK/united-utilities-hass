@@ -1,0 +1,49 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "United Utilities",
+        "description": "Use the customer ID and PIN from the United Utilities app (not your website email and password). The account locks after 3 wrong PINs, so check the PIN before submitting.",
+        "data": {
+          "customer_id": "Customer ID",
+          "pin": "PIN",
+          "account_number": "Account number"
+        },
+        "data_description": {
+          "customer_id": "The numeric ID the app was registered with.",
+          "pin": "The PIN you use to log in to the app.",
+          "account_number": "Your water account number, as shown on your bill."
+        }
+      },
+      "reauth_confirm": {
+        "title": "Reauthenticate United Utilities",
+        "description": "United Utilities rejected the stored PIN. Enter the current customer ID and PIN. The account locks after 3 wrong PINs.",
+        "data": {
+          "customer_id": "Customer ID",
+          "pin": "PIN"
+        }
+      }
+    },
+    "error": {
+      "invalid_auth": "Customer ID or PIN was rejected. Each wrong PIN counts toward the 3-attempt lockout.",
+      "invalid_account": "This account number isn't linked to that login.",
+      "cannot_connect": "Failed to connect to United Utilities.",
+      "unknown": "Unexpected error."
+    },
+    "abort": {
+      "already_configured": "This account is already configured.",
+      "reauth_successful": "Reauthentication was successful.",
+      "wrong_account": "These credentials don't belong to the configured account."
+    }
+  },
+  "entity": {
+    "sensor": {
+      "meter_reading": { "name": "Meter reading" },
+      "last_reading_date": { "name": "Last reading date" },
+      "next_reading_date": { "name": "Next reading date" },
+      "balance": { "name": "Account balance" },
+      "next_payment": { "name": "Next payment" },
+      "next_payment_date": { "name": "Next payment date" }
+    }
+  }
+}

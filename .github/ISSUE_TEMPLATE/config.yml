@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Setup help (finding your customer ID and PIN)
+    url: https://github.com/KRoperUK/united-utilities-hass#finding-your-customer-id
+    about: The integration uses the app's customer ID and PIN, not your website login. Please read this before opening an issue.
+  - name: Client library issues
+    url: https://github.com/KRoperUK/united-utilities-py/issues
+    about: Problems with the API itself (wrong values, new endpoints) belong in the library repository.

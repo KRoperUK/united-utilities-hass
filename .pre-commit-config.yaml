@@ -1,0 +1,36 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: check-added-large-files
+      - id: check-yaml
+      - id: check-json
+      - id: check-toml
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+      - id: detect-private-key
+  # Keep rev equal to the ruff pin in requirements_test.txt.
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.16.7
+    hooks:
+      - id: ruff
+        args: [--fix, --exit-non-zero-on-fix]
+      - id: ruff-format
+  - repo: local
+    hooks:
+      - id: check-ha-manifest-key-order
+        name: check Home Assistant manifest key order
+        entry: >
+          bash -c 'for file in "$@"; do
+          jq -e '\''type == "object" and ((keys_unsorted) as $keys | ($keys[:2] == ["domain","name"]) and ($keys == (["domain","name"] + (($keys - ["domain","name"]) | sort))))'\'' "$file" > /dev/null
+          || { echo "$file: manifest keys must be domain, name, then alphabetical order"; exit 1; };
+          done' --
+        language: system
+        files: ^custom_components/[^/]+/manifest\.json$
+        pass_filenames: true
+      - id: translations-match-strings
+        name: translations/en.json matches strings.json
+        entry: bash -c 'cmp -s custom_components/united_utilities/strings.json custom_components/united_utilities/translations/en.json || { echo "translations/en.json is out of date; copy strings.json over it"; exit 1; }'
+        language: system
+        files: ^custom_components/united_utilities/(strings\.json|translations/en\.json)$
+        pass_filenames: false

@@ -1,0 +1,61 @@
+name: Bug report
+description: Report a problem with the United Utilities integration.
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report a bug. Please fill in as much detail as possible.
+  - type: input
+    id: version
+    attributes:
+      label: Integration version
+      placeholder: e.g. 0.1.0
+    validations:
+      required: true
+  - type: input
+    id: ha_version
+    attributes:
+      label: Home Assistant version
+      placeholder: e.g. 2026.10.0
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: Describe the bug
+      description: A clear and concise description of what the bug is.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Go to Settings → Devices & Services
+        2. Click ...
+        3. See error
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behaviour
+    validations:
+      required: false
+  - type: textarea
+    id: diagnostics
+    attributes:
+      label: Diagnostics and debug logs
+      description: |
+        Attach the diagnostics download (it contains no credentials or account numbers), plus logs with debug logging enabled for `custom_components.united_utilities` and `united_utilities`.
+        **Redact your customer ID, PIN, account number and any personal details from logs before posting.**
+      render: text
+    validations:
+      required: false
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional context
+    validations:
+      required: false

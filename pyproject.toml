@@ -1,0 +1,47 @@
+# Home Assistant custom integration, not a distributable package. Runtime
+# dependencies come from custom_components/united_utilities/manifest.json; test
+# dependencies from requirements_test.txt. The version is bumped by release-please.
+[project]
+name = "united-utilities-hass"
+version = "0.1.0"
+description = "United Utilities integration for Home Assistant (unofficial)"
+requires-python = ">=3.14"
+readme = "README.md"
+license = { text = "MIT" }
+
+[tool.ruff]
+target-version = "py314"
+line-length = 120
+extend-exclude = ["*.md"]
+
+[tool.ruff.lint]
+select = ["E", "W", "F", "I", "UP", "B", "SIM"]
+ignore = ["E501"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["custom_components", "tests"]
+
+[tool.mypy]
+python_version = "3.14"
+strict = true
+ignore_missing_imports = true
+check_untyped_defs = true
+files = ["custom_components/united_utilities"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+addopts = "-v --tb=short"
+
+[tool.coverage.run]
+source = ["custom_components/united_utilities"]
+omit = ["tests/*"]
+
+[tool.coverage.report]
+show_missing = true
+fail_under = 90
+exclude_lines = [
+  "pragma: no cover",
+  "if TYPE_CHECKING:",
+]

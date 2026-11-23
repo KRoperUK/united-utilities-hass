@@ -1,0 +1,27 @@
+name: HACS
+
+# Runs regardless of the CI paths filter: a repository-level problem (bad
+# hacs.json, missing release asset or brand assets) blocks installs even when no
+# code changed.
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    # Weekly: HACS tightens its requirements over time.
+    - cron: "0 6 * * 1"
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  hacs:
+    name: HACS repository validation
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: HACS Action
+        uses: hacs/action@d556e736723344f83838d08488c983a15381059a # 22.5.0
+        with:
+          category: integration
