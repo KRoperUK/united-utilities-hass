@@ -35,6 +35,8 @@ updates:
         patterns:
           - "*"
 
+  # .pre-commit-config.yaml. Its ruff rev must equal the ruff pin in
+  # requirements_test.txt (CI's lint job fails until both PRs land together).
   - package-ecosystem: "pre-commit"
     directory: "/"
     schedule:
