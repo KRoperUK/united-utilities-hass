@@ -40,31 +40,28 @@ Copy `custom_components/united_utilities` into your Home Assistant
 
 ## Setup
 
+Your account must already be registered in the **United Utilities app**.
+
 **Settings → Devices & services → Add integration → United Utilities**, then
 enter:
 
-- **Customer ID** and **PIN**: from the United Utilities app. These are not your
-  website email and password.
 - **Account number**: from your bill.
+- **Postcode**: of the property on the account. It's used once to find your
+  app customer ID (the same lookup the app's "register again" screen does) and
+  is not stored.
+- **App PIN**: the PIN you log in to the app with. This is not your website
+  password.
 
-> ⚠️ United Utilities locks the account after **3 wrong PINs**. The integration
-> never retries a rejected PIN: it stops polling and asks you to reauthenticate,
-> and it won't try the old PIN again after a restart.
-
-### Finding your customer ID
-
-You set the PIN yourself when you registered the app. The customer ID is a
-number United Utilities assigns at registration; the app doesn't show it. The
-reliable way to find it is to capture the app's login request
-(`POST /api/account/login`) with a proxy such as Charles or mitmproxy. The form
-body contains `customerId=…&pin=…`. The app pins its certificate, so it will
-stop working after login while the proxy is active; that's expected and doesn't
-affect the captured login.
+> ⚠️ United Utilities locks the account for about an hour after **3 wrong
+> attempts**. The integration never retries a rejected PIN: it stops polling
+> and asks you to reauthenticate, and it won't try the old PIN again after a
+> restart.
 
 ## Changing the PIN
 
-If you change your PIN in the app, the next poll fails and Home Assistant shows
-a **Reauthenticate** prompt. Enter the new PIN there.
+If you change your PIN in the app, or register the app again, the next poll
+fails and Home Assistant shows a **Reauthenticate** prompt. Enter your postcode
+and current PIN there.
 
 ## Removal
 

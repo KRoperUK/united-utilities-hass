@@ -15,6 +15,8 @@ PLATFORMS: list[Platform] = [Platform.SENSOR]
 
 CONF_CUSTOMER_ID = "customer_id"
 CONF_ACCOUNT_NUMBER = "account_number"
+# Only used in the config flow to look up the customer ID; never stored.
+CONF_POSTCODE = "postcode"
 # Set when the PIN was rejected. While present, setup refuses to try the PIN
 # again: the service locks the account after three bad attempts, and every Home
 # Assistant restart would otherwise spend one. Cleared by a successful reauth.

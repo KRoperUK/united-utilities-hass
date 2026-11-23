@@ -3,9 +3,12 @@
 - Thin HA integration over the `united-utilities` PyPI library. API, auth and
   parsing changes belong in `united-utilities-py`, not here.
 - **Never retry a rejected PIN.** United Utilities locks the account after 3
-  wrong PINs. `AuthError` sets `auth_failed` in the entry data and raises
+  wrong PINs (HTTP 423, about an hour). `AuthError` sets `auth_failed` in the entry data and raises
   `ConfigEntryAuthFailed`; setup refuses to log in while the flag is set, so HA
   restarts don't spend strikes. Only a successful reauth clears it.
+- The config flow looks up the customer ID from account number + postcode
+  (`lookup_customer_id`). The postcode is PII and is never stored, logged or put
+  in entry data.
 - An expired token (`NotLoggedInError`) gets exactly one fresh login per poll.
 - The library pin is exact and lives in two places: `manifest.json`
   `requirements` and `requirements_test.txt`. Bump both together (CI checks).

@@ -3,37 +3,39 @@
     "step": {
       "user": {
         "title": "United Utilities",
-        "description": "Use the customer ID and PIN from the United Utilities app (not your website email and password). The account locks after 3 wrong PINs, so check the PIN before submitting.",
+        "description": "Your account must already be registered in the United Utilities app. Use the app PIN, not your website password. The account locks for about an hour after 3 wrong attempts, so check the details before submitting.",
         "data": {
-          "customer_id": "Customer ID",
-          "pin": "PIN",
-          "account_number": "Account number"
+          "account_number": "Account number",
+          "postcode": "Postcode",
+          "pin": "App PIN"
         },
         "data_description": {
-          "customer_id": "The numeric ID the app was registered with.",
-          "pin": "The PIN you use to log in to the app.",
-          "account_number": "Your water account number, as shown on your bill."
+          "account_number": "Your water account number, as shown on your bill.",
+          "postcode": "The postcode of the property on the account. Used once to find your app customer ID; not stored.",
+          "pin": "The PIN you use to log in to the United Utilities app."
         }
       },
       "reauth_confirm": {
         "title": "Reauthenticate United Utilities",
-        "description": "United Utilities rejected the stored PIN. Enter the current customer ID and PIN. The account locks after 3 wrong PINs.",
+        "description": "United Utilities rejected the stored PIN. Enter the postcode and your current app PIN. The account locks for about an hour after 3 wrong attempts.",
         "data": {
-          "customer_id": "Customer ID",
-          "pin": "PIN"
+          "postcode": "Postcode",
+          "pin": "App PIN"
         }
       }
     },
     "error": {
-      "invalid_auth": "Customer ID or PIN was rejected. Each wrong PIN counts toward the 3-attempt lockout.",
+      "invalid_auth": "The PIN was rejected. Each wrong PIN counts toward the 3-attempt lockout.",
+      "no_match": "No United Utilities account matches that account number and postcode.",
+      "not_registered": "This account isn't registered in the United Utilities app yet. Register in the app, then try again.",
+      "account_locked": "United Utilities has locked this account after too many failed attempts. Wait about an hour before trying again.",
       "invalid_account": "This account number isn't linked to that login.",
       "cannot_connect": "Failed to connect to United Utilities.",
       "unknown": "Unexpected error."
     },
     "abort": {
       "already_configured": "This account is already configured.",
-      "reauth_successful": "Reauthentication was successful.",
-      "wrong_account": "These credentials don't belong to the configured account."
+      "reauth_successful": "Reauthentication was successful."
     }
   },
   "entity": {

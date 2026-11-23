@@ -11,3 +11,5 @@ venv/
 .env
 united_utilities.zip
 .DS_Store
+# Home Assistant state written by local live runs; holds real credentials.
+.storage/
