@@ -98,6 +98,7 @@ async def test_untrustworthy_bill_raises_repair_issue_and_withholds_prices(
     assert issue.translation_placeholders == {
         "bill_date": "2026-11-21",
         "problems": "charge lines add up to £76.70 but the bill total is £99.99",
+        "issue_tracker": "https://github.com/KRoperUK/united-utilities-hass/issues",
     }
 
     diagnostics = await async_get_config_entry_diagnostics(hass, mock_config_entry)

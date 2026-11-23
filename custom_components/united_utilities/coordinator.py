@@ -31,6 +31,7 @@ _LOGGER = logging.getLogger(__name__)
 # back for the latest itemised one. Each bill is downloaded at most once per run.
 MAX_BILLS_TO_CHECK = 3
 ISSUE_BILL_UNREADABLE = "bill_unreadable"
+ISSUE_TRACKER_URL = "https://github.com/KRoperUK/united-utilities-hass/issues"
 
 type UnitedUtilitiesConfigEntry = ConfigEntry[UnitedUtilitiesCoordinator]
 
@@ -156,6 +157,8 @@ class UnitedUtilitiesCoordinator(DataUpdateCoordinator[UnitedUtilitiesData]):
             translation_placeholders={
                 "bill_date": latest.date.isoformat() if latest.date else "unknown",
                 "problems": "; ".join(latest.bill.problems),
+                # hassfest rejects URLs inside translation strings, so it's passed in.
+                "issue_tracker": ISSUE_TRACKER_URL,
             },
         )
 
