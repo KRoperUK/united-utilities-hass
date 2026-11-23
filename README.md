@@ -6,7 +6,8 @@ readings through the same API as the United Utilities mobile app, using the
 [`united-utilities`](https://github.com/KRoperUK/united-utilities-py) library.
 
 > Not affiliated with or endorsed by United Utilities. It uses a private app API
-> that can change without notice.
+> that can change without notice. The United Utilities name and logo are
+> trademarks of United Utilities and are used only to identify the service.
 
 ## What you get
 
