@@ -22,3 +22,7 @@
   `scripts/brand_src/` (converted from the app's vector logo). Edit those, not
   the PNGs. They live outside `custom_components/` so they don't ship in the
   HACS zip.
+- Bill PDFs are fetched for tariffs. Only a `trustworthy` bill (no `Bill.problems`)
+  feeds the price sensors; otherwise they go unavailable and a `bill_unreadable`
+  repair issue lists the problems. Never log, store or put bill PDFs or their
+  text in diagnostics: they contain the holder's name, address and bank details.

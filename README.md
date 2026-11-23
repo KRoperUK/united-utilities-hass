@@ -21,10 +21,28 @@ One device per water account, polled every 6 hours:
 | Account balance | `£80.58` | Amount owed. |
 | Next payment | `£51.78` | Next scheduled payment. |
 | Next payment date | `2026-11-23` | |
+| Water price | `£5.51/m³` | Fresh water + wastewater usage rate from your latest bill. Use it as the price entity for water in the Energy dashboard. Attributes: `water_per_m3`, `wastewater_per_m3`, `from_bill_dated`. |
+| Standing charge | `£0.487/day` | Combined fixed charges from your latest bill. Attribute: `per_year`. |
+| Last bill | `£76.51` | Latest itemised bill. Attributes: billing period, `usage_m3`, the usage and standing-charge split for fresh water and wastewater, and any discount. |
 
 Meter readings only change when a read is recorded (by you in the app or by
 United Utilities), typically every few months. This is billing data, not a live
 smart-meter feed.
+
+### Prices from your bills
+
+Tariffs aren't in the app's API, so the last three sensors come from your bill
+PDFs. Each bill is downloaded once and read in memory; it's never stored,
+because it includes your name, address and bank details. Payment-plan update
+"bills" have no charges, so the integration looks back up to three bills for the
+latest itemised one. A bill spanning 1 April uses the newer tariff.
+
+Every bill is cross-checked: the line items must add up to the total, each
+charge must equal quantity × rate, and the volume must match your meter
+readings. If a bill doesn't add up, usually because United Utilities changed the
+layout, the three bill sensors go **unavailable** rather than showing figures
+that might be wrong. A **repair** under Settings → System → Repairs then says
+what didn't match. The other sensors keep working.
 
 ## Installation
 

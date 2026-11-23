@@ -2,7 +2,7 @@ pytest-homeassistant-custom-component
 pytest-cov
 pytest-asyncio
 # Must match the exact pin in custom_components/united_utilities/manifest.json.
-united-utilities==0.3.1
+united-utilities[pdf]==0.4.0
 # Exact pins, kept equal to the revs in .pre-commit-config.yaml.
 ruff==0.17.6
 mypy==2.4.1

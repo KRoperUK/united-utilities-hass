@@ -18,6 +18,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
+from united_utilities import Bill
 
 from .const import DOMAIN, MANUFACTURER, NAME
 from .coordinator import UnitedUtilitiesConfigEntry, UnitedUtilitiesCoordinator, UnitedUtilitiesData
@@ -35,6 +36,70 @@ class UnitedUtilitiesSensorEntityDescription(SensorEntityDescription):
 
     value_fn: Callable[[UnitedUtilitiesData], float | int | date | None]
     attributes_fn: Callable[[UnitedUtilitiesData], dict[str, Any]] | None = None
+    #: Extra availability check on top of the coordinator's.
+    available_fn: Callable[[UnitedUtilitiesData], bool] | None = None
+
+
+def _trusted_bill(data: UnitedUtilitiesData) -> Bill | None:
+    """The latest bill, only if it passed every consistency check."""
+    latest = data.latest_bill
+    return latest.bill if latest and latest.bill.trustworthy else None
+
+
+def _standing_per_day(data: UnitedUtilitiesData) -> float | None:
+    bill = _trusted_bill(data)
+    per_year = bill.standing_charge_per_year if bill else None
+    return round(per_year / 365, 4) if per_year is not None else None
+
+
+def _standing_attributes(data: UnitedUtilitiesData) -> dict[str, Any]:
+    bill = _trusted_bill(data)
+    return {"per_year": bill.standing_charge_per_year} if bill else {}
+
+
+def _tariff_rate(bill: Bill, service: str, kind: str) -> float | None:
+    """The latest tariff's rate for one service, e.g. fresh water usage in £/m³."""
+    lines = [c for c in bill.charges if c.service == service and c.kind == kind]
+    if not lines:
+        return None
+    latest_end = max((c.period_end for c in lines if c.period_end), default=None)
+    return next(c.rate for c in lines if c.period_end == latest_end)
+
+
+def _price_attributes(data: UnitedUtilitiesData) -> dict[str, Any]:
+    bill = _trusted_bill(data)
+    if bill is None:
+        return {}
+    return {
+        "water_per_m3": _tariff_rate(bill, "water", "usage"),
+        "wastewater_per_m3": _tariff_rate(bill, "wastewater", "usage"),
+        "from_bill_dated": data.latest_bill.date.isoformat() if data.latest_bill and data.latest_bill.date else None,
+    }
+
+
+def _bill_attributes(data: UnitedUtilitiesData) -> dict[str, Any]:
+    bill = _trusted_bill(data)
+    if bill is None:
+        return {}
+
+    def spent(service: str, kind: str) -> float:
+        return round(sum(c.amount for c in bill.charges if c.service == service and c.kind == kind), 2)
+
+    return {
+        "bill_date": data.latest_bill.date.isoformat() if data.latest_bill and data.latest_bill.date else None,
+        "period_start": bill.period_start.isoformat() if bill.period_start else None,
+        "period_end": bill.period_end.isoformat() if bill.period_end else None,
+        "usage_m3": bill.usage_m3,
+        "water_usage": spent("water", "usage"),
+        "water_standing_charge": spent("water", "standing"),
+        "wastewater_usage": spent("wastewater", "usage"),
+        "wastewater_standing_charge": spent("wastewater", "standing"),
+        "discount": bill.discount,
+    }
+
+
+def _bill_available(data: UnitedUtilitiesData) -> bool:
+    return _trusted_bill(data) is not None
 
 
 def _latest_reading_attributes(data: UnitedUtilitiesData) -> dict[str, Any]:
@@ -91,6 +156,37 @@ SENSORS: tuple[UnitedUtilitiesSensorEntityDescription, ...] = (
         device_class=SensorDeviceClass.DATE,
         value_fn=lambda d: d.details.next_payment_date,
     ),
+    # From the latest itemised bill PDF. Unavailable when that bill failed its consistency
+    # checks (a repair issue explains why) or no itemised bill has been found yet.
+    UnitedUtilitiesSensorEntityDescription(
+        key="water_price",
+        translation_key="water_price",
+        # Currency per volume: what the Energy dashboard expects for a water price entity.
+        native_unit_of_measurement=f"GBP/{UnitOfVolume.CUBIC_METERS}",
+        suggested_display_precision=3,
+        value_fn=lambda d: bill.price_per_m3 if (bill := _trusted_bill(d)) else None,
+        attributes_fn=_price_attributes,
+        available_fn=_bill_available,
+    ),
+    UnitedUtilitiesSensorEntityDescription(
+        key="standing_charge",
+        translation_key="standing_charge",
+        native_unit_of_measurement="GBP/d",
+        suggested_display_precision=3,
+        value_fn=_standing_per_day,
+        attributes_fn=_standing_attributes,
+        available_fn=_bill_available,
+    ),
+    UnitedUtilitiesSensorEntityDescription(
+        key="last_bill",
+        translation_key="last_bill",
+        device_class=SensorDeviceClass.MONETARY,
+        native_unit_of_measurement="GBP",
+        suggested_display_precision=2,
+        value_fn=lambda d: bill.total if (bill := _trusted_bill(d)) else None,
+        attributes_fn=_bill_attributes,
+        available_fn=_bill_available,
+    ),
 )
 
 
@@ -129,6 +225,14 @@ class UnitedUtilitiesSensor(CoordinatorEntity[UnitedUtilitiesCoordinator], Senso
             model="Water account",
             configuration_url="https://myaccount.unitedutilities.com/",
         )
+
+    @property
+    def available(self) -> bool:
+        """Available when the last poll succeeded and this sensor's data is usable."""
+        if not super().available:
+            return False
+        check = self.entity_description.available_fn
+        return check is None or check(self.coordinator.data)
 
     @property
     def native_value(self) -> float | int | date | None:

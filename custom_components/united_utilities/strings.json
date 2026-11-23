@@ -45,7 +45,16 @@
       "next_reading_date": { "name": "Next reading date" },
       "balance": { "name": "Account balance" },
       "next_payment": { "name": "Next payment" },
-      "next_payment_date": { "name": "Next payment date" }
+      "next_payment_date": { "name": "Next payment date" },
+      "water_price": { "name": "Water price" },
+      "standing_charge": { "name": "Standing charge" },
+      "last_bill": { "name": "Last bill" }
+    }
+  },
+  "issues": {
+    "bill_unreadable": {
+      "title": "United Utilities bill couldn't be read reliably",
+      "description": "Your latest United Utilities bill (dated {bill_date}) didn't pass the integration's consistency checks, so the Water price, Standing charge and Last bill sensors are unavailable rather than showing figures that might be wrong. Your balance, payments and meter readings are not affected.\n\nThis usually means United Utilities changed the layout of its bills. What didn't add up: {problems}\n\nPlease report this at {issue_tracker} and include the problems listed above. Don't attach the bill itself: it contains your name, address and bank details. The issue clears itself once a bill reads correctly."
     }
   }
 }

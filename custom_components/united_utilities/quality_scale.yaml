@@ -29,5 +29,6 @@ rules:
   reauthentication-flow: done
   parallel-updates: done
   diagnostics: done
+  repair-issues: done
   entity-translations: done
   icon-translations: done

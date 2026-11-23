@@ -50,4 +50,21 @@ async def async_get_config_entry_diagnostics(hass: HomeAssistant, entry: UnitedU
             "latest_reading_type": latest.reading_type if latest else None,
             "next_reading_date": data.meter.next_reading_date.isoformat() if data.meter.next_reading_date else None,
         }
+        # Shape and cross-check results only: enough to debug a template change, no amounts
+        # that would identify a household.
+        bill = data.latest_bill.bill if data.latest_bill else None
+        summary["latest_bill"] = (
+            None
+            if bill is None
+            else {
+                "bill_date": data.latest_bill.date.isoformat() if data.latest_bill and data.latest_bill.date else None,
+                "itemised": bill.itemised,
+                "trustworthy": bill.trustworthy,
+                "charge_lines": len(bill.charges),
+                "tariff_periods": len({(c.period_start, c.period_end) for c in bill.charges}),
+                "has_readings": bill.previous_reading is not None and bill.current_reading is not None,
+                "has_discount": bill.discount is not None,
+                "problems": list(bill.problems),
+            }
+        )
     return summary
