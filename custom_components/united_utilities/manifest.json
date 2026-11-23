@@ -1,14 +1,20 @@
 {
   "domain": "united_utilities",
   "name": "United Utilities",
-  "codeowners": ["@KRoperUK"],
+  "codeowners": [
+    "@KRoperUK"
+  ],
   "config_flow": true,
   "documentation": "https://github.com/KRoperUK/united-utilities-hass",
   "integration_type": "service",
   "iot_class": "cloud_polling",
   "issue_tracker": "https://github.com/KRoperUK/united-utilities-hass/issues",
-  "loggers": ["united_utilities"],
+  "loggers": [
+    "united_utilities"
+  ],
   "quality_scale": "bronze",
-  "requirements": ["united-utilities==0.3.1"],
-  "version": "0.1.0"
+  "requirements": [
+    "united-utilities==0.3.1"
+  ],
+  "version": "0.2.0"
 }
