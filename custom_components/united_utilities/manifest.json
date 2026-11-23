@@ -9,6 +9,6 @@
   "issue_tracker": "https://github.com/KRoperUK/united-utilities-hass/issues",
   "loggers": ["united_utilities"],
   "quality_scale": "bronze",
-  "requirements": ["united-utilities==0.3.0"],
+  "requirements": ["united-utilities==0.3.1"],
   "version": "0.1.0"
 }
