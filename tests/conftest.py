@@ -19,6 +19,7 @@ from custom_components.united_utilities.const import CONF_ACCOUNT_NUMBER, CONF_C
 CUSTOMER_ID = "24000000"
 PIN = "000000"
 ACCOUNT_NUMBER = "4000000000"
+POSTCODE = "M1 1AA"
 
 ENTRY_DATA: dict[str, Any] = {CONF_CUSTOMER_ID: CUSTOMER_ID, "pin": PIN, CONF_ACCOUNT_NUMBER: ACCOUNT_NUMBER}
 
@@ -72,7 +73,15 @@ def _make_client() -> MagicMock:
 
 
 @pytest.fixture
-def mock_client() -> Generator[MagicMock]:
+def mock_lookup() -> Generator[AsyncMock]:
+    """The customer-ID lookup the config flow runs before logging in."""
+    lookup = AsyncMock(return_value=CUSTOMER_ID)
+    with patch("custom_components.united_utilities.config_flow.lookup_customer_id", lookup):
+        yield lookup
+
+
+@pytest.fixture
+def mock_client(mock_lookup: AsyncMock) -> Generator[MagicMock]:
     """One mock client, used by both setup and the config flow."""
     client = _make_client()
     with (

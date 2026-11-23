@@ -11,6 +11,8 @@ before reporting a suspected vulnerability.
 The integration stores and uses sensitive data on your behalf:
 
 - Your United Utilities app **customer ID** and **PIN**, and your **account number**.
+  Setup asks for your **postcode** to look up the customer ID; it is sent to
+  United Utilities once and never stored.
 - The short-lived **session token** returned by login (kept in memory only).
 
 These are held in Home Assistant's config-entry storage. They are never logged,
