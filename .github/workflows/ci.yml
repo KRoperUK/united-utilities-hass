@@ -37,6 +37,7 @@ jobs:
               - 'scripts/**'
               - 'pyproject.toml'
               - 'requirements_test.txt'
+              - '.pre-commit-config.yaml'
               - 'hacs.json'
               - '.github/workflows/ci.yml'
 
@@ -61,6 +62,14 @@ jobs:
           grep -qxF "$manifest" requirements_test.txt || { echo "::error::manifest requires $manifest but requirements_test.txt disagrees"; exit 1; }
       - name: translations/en.json matches strings.json
         run: cmp custom_components/united_utilities/strings.json custom_components/united_utilities/translations/en.json
+      # Dependabot bumps the pre-commit rev and requirements_test.txt in separate PRs.
+      - name: ruff pin agrees between pre-commit and requirements_test.txt
+        run: |
+          hook=$(grep -A1 'astral-sh/ruff-pre-commit' .pre-commit-config.yaml | grep -oE 'v?[0-9]+\.[0-9]+\.[0-9]+' | sed 's/^v//')
+          req=$(grep -oE '^ruff==[0-9.]+' requirements_test.txt | cut -d= -f3)
+          [ "$hook" = "$req" ] || { echo "::error::ruff is $hook in .pre-commit-config.yaml but $req in requirements_test.txt"; exit 1; }
+      - run: pip install pre-commit
+      - run: pre-commit run --all-files --show-diff-on-failure
 
   test:
     needs: changes
