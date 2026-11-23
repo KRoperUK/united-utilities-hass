@@ -5,7 +5,10 @@
       "next_reading_date": { "default": "mdi:calendar-clock" },
       "balance": { "default": "mdi:cash" },
       "next_payment": { "default": "mdi:cash-clock" },
-      "next_payment_date": { "default": "mdi:calendar-clock" }
+      "next_payment_date": { "default": "mdi:calendar-clock" },
+      "water_price": { "default": "mdi:water-pump" },
+      "standing_charge": { "default": "mdi:calendar-today" },
+      "last_bill": { "default": "mdi:file-document-outline" }
     }
   }
 }
