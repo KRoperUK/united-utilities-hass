@@ -35,8 +35,9 @@ updates:
         patterns:
           - "*"
 
-  # .pre-commit-config.yaml. Its ruff rev must equal the ruff pin in
-  # requirements_test.txt (CI's lint job fails until both PRs land together).
+  # .pre-commit-config.yaml. Hook bumps are batched into one weekly PR. Its ruff rev
+  # must equal the ruff pin in requirements_test.txt, so land that python-group PR
+  # alongside it (CI's lint job fails until both match).
   - package-ecosystem: "pre-commit"
     directory: "/"
     schedule:
@@ -45,3 +46,7 @@ updates:
       prefix: "chore(deps)"
     labels:
       - "dependencies"
+    groups:
+      pre-commit:
+        patterns:
+          - "*"
