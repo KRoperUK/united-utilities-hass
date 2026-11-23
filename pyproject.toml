@@ -3,7 +3,7 @@
 # dependencies from requirements_test.txt. The version is bumped by release-please.
 [project]
 name = "united-utilities-hass"
-version = "0.2.0"
+version = "0.3.0"
 description = "United Utilities integration for Home Assistant (unofficial)"
 requires-python = ">=3.14"
 readme = "README.md"
