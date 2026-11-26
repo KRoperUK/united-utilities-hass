@@ -6,9 +6,12 @@ from unittest.mock import MagicMock
 
 import pytest
 from homeassistant.core import HomeAssistant
+from homeassistant.helpers import device_registry as dr
 from homeassistant.helpers import entity_registry as er
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 from united_utilities import MeterReadings
+
+from custom_components.united_utilities.const import DOMAIN
 
 from .conftest import ACCOUNT_NUMBER
 
@@ -55,6 +58,16 @@ async def test_unique_ids_use_account_number(hass: HomeAssistant, loaded: MockCo
     entry = registry.async_get("sensor.united_utilities_account_balance")
     assert entry is not None
     assert entry.unique_id == f"{ACCOUNT_NUMBER}_balance"
+
+
+async def test_one_service_device_without_account_number(hass: HomeAssistant, loaded: MockConfigEntry) -> None:
+    devices = dr.async_entries_for_config_entry(dr.async_get(hass), loaded.entry_id)
+    assert len(devices) == 1
+    device = devices[0]
+    assert device.entry_type is dr.DeviceEntryType.SERVICE
+    assert device.name == "United Utilities"
+    assert device.identifiers == {(DOMAIN, ACCOUNT_NUMBER)}
+    assert ACCOUNT_NUMBER not in (device.name or "")
 
 
 async def test_no_readings_is_unknown(hass: HomeAssistant, loaded: MockConfigEntry, mock_client: MagicMock) -> None:
