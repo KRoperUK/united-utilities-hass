@@ -13,7 +13,7 @@ from homeassistant.components.sensor import (
     SensorEntityDescription,
     SensorStateClass,
 )
-from homeassistant.const import UnitOfVolume
+from homeassistant.const import EntityCategory, UnitOfVolume
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 from united_utilities import Bill
@@ -124,6 +124,9 @@ SENSORS: tuple[UnitedUtilitiesSensorEntityDescription, ...] = (
         key="last_reading_date",
         translation_key="last_reading_date",
         device_class=SensorDeviceClass.DATE,
+        # Same as the meter reading's reading_date attribute, so off unless wanted.
+        entity_category=EntityCategory.DIAGNOSTIC,
+        entity_registry_enabled_default=False,
         value_fn=lambda d: d.meter.latest.date if d.meter.latest else None,
     ),
     UnitedUtilitiesSensorEntityDescription(

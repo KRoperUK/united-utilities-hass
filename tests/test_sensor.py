@@ -5,6 +5,7 @@ from __future__ import annotations
 from unittest.mock import MagicMock
 
 import pytest
+from homeassistant.const import EntityCategory
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers import device_registry as dr
 from homeassistant.helpers import entity_registry as er
@@ -17,7 +18,12 @@ from .conftest import ACCOUNT_NUMBER
 
 
 @pytest.fixture
-async def loaded(hass: HomeAssistant, mock_client: MagicMock, mock_config_entry: MockConfigEntry) -> MockConfigEntry:
+async def loaded(
+    hass: HomeAssistant,
+    mock_client: MagicMock,
+    mock_config_entry: MockConfigEntry,
+    entity_registry_enabled_by_default: None,
+) -> MockConfigEntry:
     mock_config_entry.add_to_hass(hass)
     await hass.config_entries.async_setup(mock_config_entry.entry_id)
     await hass.async_block_till_done()
@@ -79,3 +85,17 @@ async def test_no_readings_is_unknown(hass: HomeAssistant, loaded: MockConfigEnt
     assert state is not None
     assert state.state == "unknown"
     assert hass.states.get("sensor.united_utilities_last_reading_date").state == "unknown"  # type: ignore[union-attr]
+
+
+async def test_last_reading_date_is_diagnostic_and_off_by_default(
+    hass: HomeAssistant, mock_client: MagicMock, mock_config_entry: MockConfigEntry
+) -> None:
+    mock_config_entry.add_to_hass(hass)
+    await hass.config_entries.async_setup(mock_config_entry.entry_id)
+    await hass.async_block_till_done()
+
+    entry = er.async_get(hass).async_get("sensor.united_utilities_last_reading_date")
+    assert entry is not None
+    assert entry.entity_category is EntityCategory.DIAGNOSTIC
+    assert entry.disabled_by is er.RegistryEntryDisabler.INTEGRATION
+    assert hass.states.get("sensor.united_utilities_last_reading_date") is None

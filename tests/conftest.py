@@ -9,7 +9,7 @@ from __future__ import annotations
 from collections.abc import Generator
 from datetime import date
 from typing import Any
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock, MagicMock, PropertyMock, patch
 
 import pytest
 from pytest_homeassistant_custom_component.common import MockConfigEntry
@@ -148,6 +148,17 @@ def mock_client(mock_lookup: AsyncMock, bills: dict[bytes, Bill]) -> Generator[M
         patch("custom_components.united_utilities.config_flow.UnitedUtilitiesClient", return_value=client),
     ):
         yield client
+
+
+@pytest.fixture
+def entity_registry_enabled_by_default() -> Generator[None]:
+    """Create every entity enabled, including those off by default."""
+    with patch(
+        "homeassistant.helpers.entity.Entity.entity_registry_enabled_default",
+        return_value=True,
+        new_callable=PropertyMock,
+    ):
+        yield
 
 
 @pytest.fixture
