@@ -111,7 +111,7 @@ class UnitedUtilitiesConfigFlow(ConfigFlow, domain=DOMAIN):
             await self.async_set_unique_id(account_number)
             self._abort_if_unique_id_configured()
 
-            customer_id, errors = await self._try_validate(account_number, user_input[CONF_POSTCODE], pin)
+            customer_id, errors = await self._try_validate(account_number, user_input[CONF_POSTCODE].strip(), pin)
             if customer_id is not None:
                 # The postcode is only needed for the lookup, so it isn't stored.
                 return self.async_create_entry(
@@ -139,7 +139,7 @@ class UnitedUtilitiesConfigFlow(ConfigFlow, domain=DOMAIN):
         if user_input is not None:
             pin = user_input[CONF_PIN].strip()
             customer_id, errors = await self._try_validate(
-                entry.data[CONF_ACCOUNT_NUMBER], user_input[CONF_POSTCODE], pin
+                entry.data[CONF_ACCOUNT_NUMBER], user_input[CONF_POSTCODE].strip(), pin
             )
             if customer_id is not None:
                 data = {k: v for k, v in entry.data.items() if k != CONF_AUTH_FAILED}

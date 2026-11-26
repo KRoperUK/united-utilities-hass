@@ -39,7 +39,7 @@ async def test_form_is_shown(hass: HomeAssistant) -> None:
 async def test_customer_id_is_looked_up_and_postcode_not_stored(
     hass: HomeAssistant, mock_client: MagicMock, mock_lookup: AsyncMock
 ) -> None:
-    result = await _submit(hass, {**USER_INPUT, "account_number": f" {ACCOUNT_NUMBER} "})
+    result = await _submit(hass, {**USER_INPUT, "account_number": f" {ACCOUNT_NUMBER} ", "postcode": f" {POSTCODE} "})
 
     assert result["type"] is FlowResultType.CREATE_ENTRY
     assert result["title"] == NAME
@@ -122,7 +122,7 @@ async def test_reauth_relooks_up_customer_id_and_clears_flag(
     assert result["step_id"] == "reauth_confirm"
     with patch("custom_components.united_utilities.async_setup_entry", return_value=True):
         result = await hass.config_entries.flow.async_configure(
-            result["flow_id"], user_input={"postcode": POSTCODE, "pin": "111111"}
+            result["flow_id"], user_input={"postcode": f"{POSTCODE} ", "pin": "111111"}
         )
 
     assert result["type"] is FlowResultType.ABORT
