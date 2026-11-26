@@ -51,6 +51,17 @@
       "last_bill": { "name": "Last bill" }
     }
   },
+  "exceptions": {
+    "pin_rejected": {
+      "message": "United Utilities rejected the PIN (attempts left before lockout: {attempts_remaining}). Reauthenticate with your current app PIN."
+    },
+    "pin_previously_rejected": {
+      "message": "United Utilities rejected the stored PIN earlier, so it won't be tried again. Reauthenticate with your current app PIN."
+    },
+    "cannot_connect": {
+      "message": "Error communicating with United Utilities: {error}"
+    }
+  },
   "issues": {
     "bill_unreadable": {
       "title": "United Utilities bill couldn't be read reliably",

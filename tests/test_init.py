@@ -46,6 +46,11 @@ async def test_rejected_pin_opens_reauth_and_sets_flag(
     assert mock_config_entry.data[CONF_AUTH_FAILED] is True
     assert _reauth_flows(hass)
     assert mock_client.login.await_count == 1
+    assert mock_config_entry.error_reason_translation_key == "pin_rejected"
+    # HA drops the trailing full stop from translated exception messages.
+    assert mock_config_entry.reason == (
+        "United Utilities rejected the PIN (attempts left before lockout: 2). Reauthenticate with your current app PIN"
+    )
 
 
 async def test_flag_skips_login_entirely(
@@ -60,6 +65,16 @@ async def test_flag_skips_login_entirely(
     assert mock_config_entry.state is ConfigEntryState.SETUP_ERROR
     assert _reauth_flows(hass)
     mock_client.login.assert_not_awaited()
+    assert mock_config_entry.error_reason_translation_key == "pin_previously_rejected"
+
+
+async def test_unknown_attempts_remaining_is_spelled_out(
+    hass: HomeAssistant, mock_client: MagicMock, mock_config_entry: MockConfigEntry
+) -> None:
+    mock_client.login.side_effect = AuthError("bad pin")
+    await _setup(hass, mock_config_entry)
+
+    assert mock_config_entry.error_reason_translation_placeholders == {"attempts_remaining": "unknown"}
 
 
 async def test_connection_error_retries_later(
@@ -70,6 +85,18 @@ async def test_connection_error_retries_later(
 
     assert mock_config_entry.state is ConfigEntryState.SETUP_RETRY
     assert CONF_AUTH_FAILED not in mock_config_entry.data
+    assert mock_config_entry.error_reason_translation_key == "cannot_connect"
+    assert mock_config_entry.error_reason_translation_placeholders == {"error": "boom"}
+
+
+async def test_timeout_without_message_names_the_error(
+    hass: HomeAssistant, mock_client: MagicMock, mock_config_entry: MockConfigEntry
+) -> None:
+    mock_client.account_details.side_effect = TimeoutError()
+    await _setup(hass, mock_config_entry)
+
+    assert mock_config_entry.state is ConfigEntryState.SETUP_RETRY
+    assert mock_config_entry.error_reason_translation_placeholders == {"error": "TimeoutError"}
 
 
 async def test_expired_token_relogs_in_once(
