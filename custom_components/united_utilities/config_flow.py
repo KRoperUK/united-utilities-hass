@@ -8,7 +8,7 @@ from collections.abc import Mapping
 from typing import Any
 
 import voluptuous as vol
-from homeassistant.config_entries import ConfigFlow, ConfigFlowResult
+from homeassistant.config_entries import ConfigEntry, ConfigFlow, ConfigFlowResult
 from homeassistant.const import CONF_PIN
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.selector import TextSelector, TextSelectorConfig, TextSelectorType
@@ -130,11 +130,21 @@ class UnitedUtilitiesConfigFlow(ConfigFlow, domain=DOMAIN):
         return await self.async_step_reauth_confirm()
 
     async def async_step_reauth_confirm(self, user_input: dict[str, Any] | None = None) -> ConfigFlowResult:
+        """Collect the postcode and current PIN after the stored PIN was rejected."""
+        return await self._async_step_credentials("reauth_confirm", self._get_reauth_entry(), user_input)
+
+    async def async_step_reconfigure(self, user_input: dict[str, Any] | None = None) -> ConfigFlowResult:
+        """Change the PIN, or pick up a new customer ID, without removing the account."""
+        return await self._async_step_credentials("reconfigure", self._get_reconfigure_entry(), user_input)
+
+    async def _async_step_credentials(
+        self, step_id: str, entry: ConfigEntry, user_input: dict[str, Any] | None
+    ) -> ConfigFlowResult:
         """Collect the postcode and current PIN for the existing account.
 
-        The customer ID is looked up again because re-registering the app issues a new one.
+        The account number is the entry's unique ID, so it can't change here. The customer ID
+        is looked up again because re-registering the app issues a new one.
         """
-        entry = self._get_reauth_entry()
         errors: dict[str, str] = {}
         if user_input is not None:
             pin = user_input[CONF_PIN].strip()
@@ -145,9 +155,12 @@ class UnitedUtilitiesConfigFlow(ConfigFlow, domain=DOMAIN):
                 data = {k: v for k, v in entry.data.items() if k != CONF_AUTH_FAILED}
                 data.update({CONF_CUSTOMER_ID: customer_id, CONF_PIN: pin})
                 return self.async_update_reload_and_abort(entry, data=data)
+            if CONF_ACCOUNT_NUMBER in errors:
+                # This form has no account number field to attach the error to.
+                errors = {"base": errors[CONF_ACCOUNT_NUMBER]}
 
         return self.async_show_form(
-            step_id="reauth_confirm",
+            step_id=step_id,
             data_schema=_schema(user_input, include_account=False),
             errors=errors,
         )

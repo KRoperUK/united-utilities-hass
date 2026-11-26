@@ -145,3 +145,57 @@ async def test_reauth_bad_pin_shows_error(
     assert result["type"] is FlowResultType.FORM
     assert result["errors"] == {"pin": "invalid_auth"}
     assert mock_config_entry.data["customer_id"] == CUSTOMER_ID
+
+
+async def test_reauth_unlinked_account_error_shows_on_form(
+    hass: HomeAssistant, mock_client: MagicMock, mock_config_entry: MockConfigEntry
+) -> None:
+    """The reauth form has no account number field, so the error moves to the form itself."""
+    mock_config_entry.add_to_hass(hass)
+    mock_client.account_details.side_effect = ClientError("forbidden", code="403")
+
+    result = await mock_config_entry.start_reauth_flow(hass)
+    result = await hass.config_entries.flow.async_configure(
+        result["flow_id"], user_input={"postcode": POSTCODE, "pin": PIN}
+    )
+
+    assert result["type"] is FlowResultType.FORM
+    assert result["errors"] == {"base": "invalid_account"}
+
+
+async def test_reconfigure_updates_pin_and_customer_id(
+    hass: HomeAssistant, mock_client: MagicMock, mock_lookup: AsyncMock, mock_config_entry: MockConfigEntry
+) -> None:
+    mock_config_entry.add_to_hass(hass)
+    mock_lookup.return_value = "25000000"
+
+    result = await mock_config_entry.start_reconfigure_flow(hass)
+    assert result["type"] is FlowResultType.FORM
+    assert result["step_id"] == "reconfigure"
+    with patch("custom_components.united_utilities.async_setup_entry", return_value=True):
+        result = await hass.config_entries.flow.async_configure(
+            result["flow_id"], user_input={"postcode": f" {POSTCODE}", "pin": " 111111 "}
+        )
+
+    assert result["type"] is FlowResultType.ABORT
+    assert result["reason"] == "reconfigure_successful"
+    assert mock_lookup.await_args.args == (ACCOUNT_NUMBER, POSTCODE)
+    assert mock_config_entry.data == {"customer_id": "25000000", "pin": "111111", "account_number": ACCOUNT_NUMBER}
+    assert mock_client.login.await_count == 1
+
+
+async def test_reconfigure_bad_pin_keeps_entry(
+    hass: HomeAssistant, mock_client: MagicMock, mock_config_entry: MockConfigEntry
+) -> None:
+    mock_config_entry.add_to_hass(hass)
+    mock_client.login.side_effect = AuthError("bad pin", attempts_remaining=2)
+
+    result = await mock_config_entry.start_reconfigure_flow(hass)
+    result = await hass.config_entries.flow.async_configure(
+        result["flow_id"], user_input={"postcode": POSTCODE, "pin": "999999"}
+    )
+
+    assert result["type"] is FlowResultType.FORM
+    assert result["errors"] == {"pin": "invalid_auth"}
+    assert mock_config_entry.data == ENTRY_DATA
+    assert mock_client.login.await_count == 1  # never retried
