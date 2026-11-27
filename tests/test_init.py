@@ -85,8 +85,8 @@ async def test_connection_error_retries_later(
 
     assert mock_config_entry.state is ConfigEntryState.SETUP_RETRY
     assert CONF_AUTH_FAILED not in mock_config_entry.data
-    assert mock_config_entry.error_reason_translation_key == "cannot_connect"
-    assert mock_config_entry.error_reason_translation_placeholders == {"error": "boom"}
+    # The rendered message, since HA 2026.8 doesn't pass the translation key on for not-ready entries.
+    assert mock_config_entry.reason == "Error communicating with United Utilities: boom"
 
 
 async def test_timeout_without_message_names_the_error(
@@ -96,7 +96,7 @@ async def test_timeout_without_message_names_the_error(
     await _setup(hass, mock_config_entry)
 
     assert mock_config_entry.state is ConfigEntryState.SETUP_RETRY
-    assert mock_config_entry.error_reason_translation_placeholders == {"error": "TimeoutError"}
+    assert mock_config_entry.reason == "Error communicating with United Utilities: TimeoutError"
 
 
 async def test_expired_token_relogs_in_once(
