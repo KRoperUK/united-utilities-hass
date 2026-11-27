@@ -17,6 +17,7 @@ from .coordinator import UnitedUtilitiesConfigEntry
 
 
 def _library_version() -> str:
+    """Read the library's installed version. Reads package metadata from disk, so run it in the executor."""
     try:
         return version("united-utilities")
     except PackageNotFoundError:  # pragma: no cover - always installed at runtime
@@ -29,7 +30,7 @@ async def async_get_config_entry_diagnostics(hass: HomeAssistant, entry: UnitedU
     data = coordinator.data
     summary: dict[str, Any] = {
         "integration_version": VERSION,
-        "library_version": _library_version(),
+        "library_version": await hass.async_add_executor_job(_library_version),
         "last_update_success": coordinator.last_update_success,
         "logged_in": coordinator.client.logged_in,
         "has_data": data is not None,
