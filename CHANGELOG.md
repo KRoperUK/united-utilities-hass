@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.4.1](https://github.com/KRoperUK/united-utilities-hass/compare/v0.4.0...v0.4.1) (2026-11-27)
+
+
+### Bug Fixes
+
+* read the library version off the event loop in diagnostics ([4fa55cb](https://github.com/KRoperUK/united-utilities-hass/commit/4fa55cbab83b6defc88aa6e171a776a5ab655ef3))
+* read the library version off the event loop in diagnostics ([1e9adc8](https://github.com/KRoperUK/united-utilities-hass/commit/1e9adc8388247577ec0ceba63f5079c5bd50bb6c)), closes [#24](https://github.com/KRoperUK/united-utilities-hass/issues/24)
+
 ## [0.4.0](https://github.com/KRoperUK/united-utilities-hass/compare/v0.3.0...v0.4.0) (2026-11-27)
 
 
