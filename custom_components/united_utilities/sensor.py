@@ -13,15 +13,13 @@ from homeassistant.components.sensor import (
     SensorEntityDescription,
     SensorStateClass,
 )
-from homeassistant.const import UnitOfVolume
+from homeassistant.const import EntityCategory, UnitOfVolume
 from homeassistant.core import HomeAssistant
-from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
-from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from united_utilities import Bill
 
-from .const import DOMAIN, MANUFACTURER, NAME
 from .coordinator import UnitedUtilitiesConfigEntry, UnitedUtilitiesCoordinator, UnitedUtilitiesData
+from .entity import UnitedUtilitiesEntity
 
 # Read-only entities fed by one coordinator; nothing to serialise.
 PARALLEL_UPDATES = 0
@@ -126,6 +124,9 @@ SENSORS: tuple[UnitedUtilitiesSensorEntityDescription, ...] = (
         key="last_reading_date",
         translation_key="last_reading_date",
         device_class=SensorDeviceClass.DATE,
+        # Same as the meter reading's reading_date attribute, so off unless wanted.
+        entity_category=EntityCategory.DIAGNOSTIC,
+        entity_registry_enabled_default=False,
         value_fn=lambda d: d.meter.latest.date if d.meter.latest else None,
     ),
     UnitedUtilitiesSensorEntityDescription(
@@ -197,34 +198,22 @@ async def async_setup_entry(
 ) -> None:
     """Set up United Utilities sensors."""
     coordinator = entry.runtime_data
-    async_add_entities(UnitedUtilitiesSensor(coordinator, entry, description) for description in SENSORS)
+    async_add_entities(UnitedUtilitiesSensor(coordinator, description) for description in SENSORS)
 
 
-class UnitedUtilitiesSensor(CoordinatorEntity[UnitedUtilitiesCoordinator], SensorEntity):
+class UnitedUtilitiesSensor(UnitedUtilitiesEntity, SensorEntity):
     """A single value from the water account."""
 
-    _attr_has_entity_name = True
     entity_description: UnitedUtilitiesSensorEntityDescription
 
     def __init__(
         self,
         coordinator: UnitedUtilitiesCoordinator,
-        entry: UnitedUtilitiesConfigEntry,
         description: UnitedUtilitiesSensorEntityDescription,
     ) -> None:
         """Initialise the sensor."""
-        super().__init__(coordinator)
+        super().__init__(coordinator, description.key)
         self.entity_description = description
-        account_key = entry.unique_id or entry.entry_id
-        self._attr_unique_id = f"{account_key}_{description.key}"
-        # Device name deliberately omits the account number: it ends up in logs and screenshots.
-        self._attr_device_info = DeviceInfo(
-            identifiers={(DOMAIN, account_key)},
-            name=NAME,
-            manufacturer=MANUFACTURER,
-            model="Water account",
-            configuration_url="https://myaccount.unitedutilities.com/",
-        )
 
     @property
     def available(self) -> bool:

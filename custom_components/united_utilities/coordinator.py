@@ -100,10 +100,18 @@ class UnitedUtilitiesCoordinator(DataUpdateCoordinator[UnitedUtilitiesData]):
         except AuthError as err:
             self._mark_auth_failed()
             raise ConfigEntryAuthFailed(
-                f"United Utilities rejected the PIN (attempts remaining: {err.attempts_remaining})"
+                translation_domain=DOMAIN,
+                translation_key="pin_rejected",
+                translation_placeholders={
+                    "attempts_remaining": "unknown" if err.attempts_remaining is None else str(err.attempts_remaining)
+                },
             ) from err
         except (ClientError, TimeoutError) as err:
-            raise UpdateFailed(f"Error communicating with United Utilities: {err}") from err
+            raise UpdateFailed(
+                translation_domain=DOMAIN,
+                translation_key="cannot_connect",
+                translation_placeholders={"error": str(err) or type(err).__name__},
+            ) from err
 
     async def _fetch(self) -> UnitedUtilitiesData:
         details = await self.client.account_details()

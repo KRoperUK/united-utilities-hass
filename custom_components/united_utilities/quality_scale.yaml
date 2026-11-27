@@ -12,9 +12,15 @@ rules:
   docs-actions:
     status: exempt
     comment: The integration registers no actions.
+  docs-conditions:
+    status: exempt
+    comment: The integration provides no conditions.
   docs-high-level-description: done
   docs-installation-instructions: done
   docs-removal-instructions: done
+  docs-triggers:
+    status: exempt
+    comment: The integration provides no triggers.
   entity-event-setup:
     status: exempt
     comment: Entities only read from the coordinator; no event subscriptions.
@@ -25,10 +31,60 @@ rules:
   test-before-setup: done
   unique-config-entry: done
 
-  # Silver / Gold items already covered
-  reauthentication-flow: done
+  # Silver
+  action-exceptions:
+    status: exempt
+    comment: The integration registers no actions.
+  config-entry-unloading: done
+  docs-configuration-parameters:
+    status: exempt
+    comment: The integration has no options flow.
+  docs-installation-parameters: done
+  entity-unavailable: done
+  integration-owner: done
+  log-when-unavailable:
+    status: done
+    comment: Handled by the DataUpdateCoordinator.
   parallel-updates: done
+  reauthentication-flow: done
+  test-coverage: done
+
+  # Gold
+  devices: done
   diagnostics: done
-  repair-issues: done
+  discovery:
+    status: exempt
+    comment: A cloud account; there is nothing on the network to discover.
+  discovery-update-info:
+    status: exempt
+    comment: A cloud account; there is nothing on the network to discover.
+  docs-data-update: done
+  docs-examples: done
+  docs-known-limitations: done
+  docs-supported-devices: done
+  docs-supported-functions: done
+  docs-troubleshooting: done
+  docs-use-cases: done
+  dynamic-devices:
+    status: exempt
+    comment: Each config entry is one water account, so it has exactly one device.
+  entity-category: done
+  entity-device-class:
+    status: done
+    comment: >-
+      Water price (GBP/m³) and standing charge (GBP/day) have no matching device
+      class; every other sensor has one.
+  entity-disabled-by-default: done
   entity-translations: done
+  exception-translations: done
   icon-translations: done
+  reconfiguration-flow: done
+  repair-issues: done
+  stale-devices:
+    status: exempt
+    comment: The single device belongs to the config entry and is removed with it.
+
+  # Platinum
+  async-dependency: done
+  inject-websession: done
+  strict-typing: done

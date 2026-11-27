@@ -14,7 +14,7 @@ from homeassistant.exceptions import ConfigEntryAuthFailed
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from united_utilities import ClientError, UnitedUtilitiesClient
 
-from .const import CONF_ACCOUNT_NUMBER, CONF_AUTH_FAILED, CONF_CUSTOMER_ID, PLATFORMS
+from .const import CONF_ACCOUNT_NUMBER, CONF_AUTH_FAILED, CONF_CUSTOMER_ID, DOMAIN, PLATFORMS
 from .coordinator import UnitedUtilitiesConfigEntry, UnitedUtilitiesCoordinator
 
 
@@ -22,7 +22,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: UnitedUtilitiesConfigEnt
     """Set up United Utilities from a config entry."""
     if entry.data.get(CONF_AUTH_FAILED):
         # Don't spend another lockout strike on a PIN already known to be wrong.
-        raise ConfigEntryAuthFailed("PIN was previously rejected; reauthenticate to continue")
+        raise ConfigEntryAuthFailed(translation_domain=DOMAIN, translation_key="pin_previously_rejected")
 
     client = UnitedUtilitiesClient(
         entry.data[CONF_CUSTOMER_ID],
