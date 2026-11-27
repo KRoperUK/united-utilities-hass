@@ -9,7 +9,7 @@ from homeassistant.const import Platform
 DOMAIN = "united_utilities"
 NAME = "United Utilities"
 MANUFACTURER = "United Utilities"
-VERSION = "0.3.0"  # x-release-please-version
+VERSION = "0.4.0"  # x-release-please-version
 
 PLATFORMS: list[Platform] = [Platform.SENSOR]
 

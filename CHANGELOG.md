@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.4.0](https://github.com/KRoperUK/united-utilities-hass/compare/v0.3.0...v0.4.0) (2026-11-27)
+
+
+### Features
+
+* add a reconfigure flow for the PIN ([f70c442](https://github.com/KRoperUK/united-utilities-hass/commit/f70c442139e34c85a6b62c1c6e5afb7cbf2c4d70))
+* make the last reading date a diagnostic entity, off by default ([e15283f](https://github.com/KRoperUK/united-utilities-hass/commit/e15283f4492948bbbc7d1862bfdea3c38444c32b))
+* translate setup and polling error messages ([861ed47](https://github.com/KRoperUK/united-utilities-hass/commit/861ed47fef02724ff97b6db99bebe064a9458446))
+
+
+### Bug Fixes
+
+* trim whitespace from the postcode in the config flow ([0a43596](https://github.com/KRoperUK/united-utilities-hass/commit/0a43596729b857992a2988d7a7f3a776cadcd487)), closes [#14](https://github.com/KRoperUK/united-utilities-hass/issues/14)
+
 ## [0.3.0](https://github.com/KRoperUK/united-utilities-hass/compare/v0.2.0...v0.3.0) (2026-11-23)
 
 
